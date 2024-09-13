@@ -26,7 +26,6 @@ export abstract class MessageFrame {
         console.error(new InvalidSubMessageOverheadError('lenght').message);
         continue;
       }
-      console.log('id', idSubMessage);
       if (!idSubMessage) {
         // NO ID IN MESSAGE
         console.error(new InvalidSubMessageOverheadError('id').message);

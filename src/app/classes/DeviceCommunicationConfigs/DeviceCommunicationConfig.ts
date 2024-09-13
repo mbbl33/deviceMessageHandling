@@ -2,12 +2,14 @@ import { SubMessage } from '../SubMessages.ts/SubMessage';
 import { ClassEnum } from 'class-enum';
 import { SubMessageDataTypes } from '../SubMessageTypes/SubMessageDataTypes';
 import { MessageFrame } from '../MessageFrames/MessageFrame';
-import { ActionCreator } from '@ngrx/store';
+import { ActionCreator, props } from '@ngrx/store';
+export type DeviceProb<T> = { value:T}
+
 //https://www.npmjs.com/package/class-enum
 export abstract class DeviceCommunicationConfig extends ClassEnum<DeviceCommunicationConfig> {
   private readonly _id: number;
   private readonly _submessage: SubMessage<unknown>;
-  private readonly _actionCreator: ActionCreator;
+  private readonly _actionCreator: ActionCreator<string,any>
   constructor(
     value: string,
     id: number,
@@ -16,10 +18,11 @@ export abstract class DeviceCommunicationConfig extends ClassEnum<DeviceCommunic
       id: number,
       data: SubMessageDataTypes<unknown>
     ) => SubMessage<unknown>,
-    actionCreator: ActionCreator
+    actionCreator: ActionCreator<string,any>
   ) {
     super(value);
     this._id = id;
+    //if neede build message
     if (submessage instanceof SubMessageDataTypes) {
       this._submessage = new submessageCtor(id, submessage);
     } else {
@@ -28,9 +31,6 @@ export abstract class DeviceCommunicationConfig extends ClassEnum<DeviceCommunic
     this._actionCreator = actionCreator;
   }
 
-  get submessage() {
-    return this._submessage;
-  }
 
   get id() {
     return this._id;
@@ -42,7 +42,7 @@ export abstract class DeviceCommunicationConfig extends ClassEnum<DeviceCommunic
 
   static get submessages() {
     const values = this.values() as DeviceCommunicationConfig[];
-    return values.map((value) => value.submessage);
+    return values.map((value) => value._submessage);
   }
 
   static get creatorActions() {
@@ -51,13 +51,13 @@ export abstract class DeviceCommunicationConfig extends ClassEnum<DeviceCommunic
   }
 
   static get creatorActionMap() {
-    const out = new Map<number, ActionCreator>();
+    const out = new Map<number, ActionCreator<string,any>>();
     const values = this.values() as DeviceCommunicationConfig[];
     values.forEach((value) => out.set(value._id, value._actionCreator));
     return out;
   }
 
-  requestMessage() {
+  getEmptyMessage() {
     //create sub message without payload
     return new this.submessageCtor(this._id, this._submessage.messageType);
   }

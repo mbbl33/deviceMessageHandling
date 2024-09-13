@@ -1,4 +1,4 @@
-import { ActionCreator } from '@ngrx/store';
+import { Action, ActionCreator } from '@ngrx/store';
 import { LGxBeamNumberMessage } from '../SubMessages.ts/LGxBeamNumberMessage';
 import { LGxSubMessage } from '../SubMessages.ts/LGxSubMessage';
 import { LGxVoltageMessage } from '../SubMessages.ts/LGxVoltageMessage';
@@ -14,38 +14,41 @@ import { SoftwareVersion_Message } from '../SubMessageTypes/SoftwareVersion_Mess
 import { SubMessageDataTypes } from '../SubMessageTypes/SubMessageDataTypes';
 import { WordArray_Message } from '../SubMessageTypes/WordArray_Message';
 import { DeviceCommunicationConfig } from './DeviceCommunicationConfig';
+
 import {
   setBeamPositions,
-  setCurrentSelectedLG,
   setLedState,
   setReciverBeamNumber,
   setReciverHardwareVersion,
   setReciverProductionDate,
   setReciverProtokollVersion,
   setReciverSoftwareVersion,
+  setReciverTypeName,
   setReciverVoltage,
   setSaftyArea,
   setSenderBeamNumber,
+  setSenderHardwareVersion,
   setSenderProductionDate,
+  setSenderProtokollVersion,
   setSenderSoftwareVersion,
   setSenderTypeName,
+  setSenderVoltage,
   setSignaleQuality,
   setSupressedBeams,
   setTriggeredBeams,
 } from '../../stores/LGx.actions';
-
 export class LightCurtainConfig extends DeviceCommunicationConfig {
   public static readonly SENDER_TYPE_NAME = new LightCurtainConfig(
     'SENDER_TYPE_NAME',
     0x1,
     new ASCII_Message(),
-    setCurrentSelectedLG
+    setSenderTypeName
   );
   public static readonly SENDER_PRODUCTION_DATE = new LightCurtainConfig(
     'SENDER_PRODUCTION_DATE',
     0x2,
     new Date_Message(),
-    setReciverProductionDate
+    setSenderProductionDate
   );
   public static readonly SENDER_SOFTWARE_VERSION = new LightCurtainConfig(
     'SENDER_SOFTWARE_VERSION',
@@ -57,19 +60,19 @@ export class LightCurtainConfig extends DeviceCommunicationConfig {
     'SENDER_HARDWARE_VERSION',
     0x4,
     new ASCII_Message(),
-    setSenderTypeName
+    setSenderHardwareVersion
   );
   public static readonly SENDER_PROTOCOL_VERSION = new LightCurtainConfig(
     'SENDER_PROTOCOL_VERSION',
     0x5,
     new ProtocolVersion_Message(),
-    setSenderProductionDate
+    setSenderProtokollVersion
   );
   public static readonly RECEIVER_TYPE_NAME = new LightCurtainConfig(
     'RECEIVER_TYPE_NAME',
     0xb,
     new ASCII_Message(),
-    setReciverProtokollVersion
+    setReciverTypeName
   );
   public static readonly RECEIVER_PRODUCTION_DATE = new LightCurtainConfig(
     'RECEIVER_PRODUCTION_DATE',
@@ -105,7 +108,7 @@ export class LightCurtainConfig extends DeviceCommunicationConfig {
     'SENDER_VOLTAGE',
     0x16,
     new LGxVoltageMessage(0x16),
-    setReciverVoltage
+    setSenderVoltage
   );
   public static readonly RECEIVER_BEAM_NUMBER = new LightCurtainConfig(
     'RECEIVER_BEAM_NUMBER',
@@ -165,7 +168,7 @@ export class LightCurtainConfig extends DeviceCommunicationConfig {
     value: string,
     id: number,
     submessage: SubMessageDataTypes<unknown> | SubMessage<unknown>,
-    actionCreator: ActionCreator
+    actionCreator: ActionCreator<string,any>
   ) {
     super(value, id, submessage, LGxSubMessage, actionCreator);
   }
